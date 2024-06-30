@@ -1,16 +1,22 @@
-import { RoleModel, RoleName, CreateRoleInput, Role } from "./role.schema"
+import { roleModel, SafeIRole, IRoleName, IRole } from "./role.schema"
 
-export class RoleService {
-  async getRoles() {
-    const roles = await RoleModel.find() as Role[]
-    return roles
-  }
+export async function getRoles() {
+  const roles = await roleModel.find() as SafeIRole[]
+  return roles
+}
 
-  async getRoleByName(name: RoleName) {
-    return await RoleModel.findOne({ name: name })
-  }
+export async function getRoleByName({ name }: { name: IRoleName }) {
+  const role = await roleModel.findOne({
+    name: name
+  }) as SafeIRole
+  return role
+}
 
-  async createRole(input: CreateRoleInput) {
-    return await RoleModel.create(input)
-  }
+
+export async function createRole({ name }: { name: IRoleName }) {
+  const role = await roleModel.create({
+    name: name
+  }) as IRole
+
+  return role
 }

@@ -1,21 +1,21 @@
 import { router, publicProcedure, createContext } from "../libs/trpc"
 import { createExpressMiddleware } from "@trpc/server/adapters/express"
 import type { Express } from "express"
-import { userRouter } from "../modules/user/user.route"
 import { roleRouter } from "../modules/role/role.route"
+import { userRouter } from "../modules/user/user.route"
+import { authRouter } from "../modules/auth/auth.route"
 
 export const appRouter = router({
-  hello: publicProcedure.query(async () => {
-    return "hello world"
-  }),
   user: userRouter,
-  role: roleRouter
+  role: roleRouter,
+  auth: authRouter
 })
 
 export function registerTrpc(app: Express) {
-  app.use("/trpc", createExpressMiddleware({
-    router: appRouter,
-    createContext
-  }))
+  app.use("/trpc",
+    createExpressMiddleware({
+      router: appRouter,
+      createContext
+    }))
 }
 

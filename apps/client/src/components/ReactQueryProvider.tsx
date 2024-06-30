@@ -13,12 +13,17 @@ export const ReactQueryProvider = ({ children }: {
       links: [
         httpBatchLink({
           url: "http://localhost:4000/trpc",
-          // fetch(url, options) {
-          //   return fetch(url, {
-          //     ...options,
-          //     credentials: 'include',
-          //   });
-          // },
+          fetch(url, options) {
+            const token = localStorage.getItem('token')
+            console.log({ tokennn: token })
+            return fetch(url, {
+              ...options,
+              headers: {
+                ...options?.headers,
+                authorization: token ? `Bearer ${token}` : '',
+              },
+            });
+          },
         })
       ]
     })

@@ -1,26 +1,28 @@
+import mongoose from "mongoose"
 import { z } from "zod"
-import { Schema, model, models } from "mongoose"
 
-export const roleNames = ["USER", "ADMIN"] as const
-export type RoleName = typeof roleNames[number]
+const roleNames = ["USER", "ADMIN"] as const
 
-export type Role = {
-  name: RoleName
+export type IRoleName = typeof roleNames[number]
+
+export type IRole = {
+  name: IRoleName
 }
 
-export const RoleSchema = new Schema<Role>({
+export type SafeIRole = IRole & {
+  _id: string
+}
+
+export const roleSchema = new mongoose.Schema({
   name: {
     type: String,
-    enum: roleNames,
-    unique: true,
-    required: true
+    required: true,
+    enum: roleNames
   }
 })
-
-export const RoleModel = model<Role>('Role', RoleSchema)
 
 export const createRoleInputSchema = z.object({
   name: z.enum(roleNames)
 })
 
-export type CreateRoleInput = z.infer<typeof createRoleInputSchema>
+export const roleModel = mongoose.model<IRole>("Role", roleSchema)

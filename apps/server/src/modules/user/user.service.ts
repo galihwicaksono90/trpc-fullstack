@@ -1,30 +1,32 @@
-import { User, UserModel, CreateUserInput } from "./user.schema"
-import { RoleService } from "../role/role.service"
+import { userModel, CreateUserInput, SafeIUser, IUser } from "./user.schema"
+import { getRoleByName, } from "../role/role.service"
 
-export class UserService {
-  private readonly roleService: RoleService;
 
-  constructor(roleService: RoleService) {
-    this.roleService = roleService
-  }
+export async function createOne(input: CreateUserInput) {
+  const role = await getRoleByName({ name: "USER" })
 
-  async getUsers() {
-    const users = await UserModel.find()
-    return users
-  }
+  const user = await userModel.create({
+    name: input.name,
+    email: input.email,
+    password: input.password,
+    role: role
+  })
+  return user
+}
 
-  async createUser(input: CreateUserInput) {
-    const userRole = await this.roleService.getRoleByName("USER")
+export async function getAll() {
+  const users = await userModel.find() as SafeIUser[]
+  return users
+}
 
-    if (!userRole) {
-      throw new Error("User role not found")
-    }
+export async function getOneById(id: string) {
+  const user = await userModel.findById(id).populate("role").exec() as SafeIUser
+  return user
+}
 
-    const newUser = await UserModel.create({
-      ...input,
-      role: userRole
-    })
-
-    return newUser
-  }
+export async function getOneByEmail(email: string) {
+  const user = await userModel.findOne({
+    email: email
+  }).populate('role').exec() as SafeIUser
+  return user
 }

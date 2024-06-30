@@ -8,7 +8,9 @@ const CreateRoleForm = () => {
   const createRole = trpc.role.createOne.useMutation()
 
   const onSubmit = async (values: RouterInput["role"]['createOne']) => {
-    const arst = await createRole.mutateAsync(values)
+    const res = await createRole.mutateAsync(values)
+
+    alert(`Role ${res.name} created`)
   }
 
   return (

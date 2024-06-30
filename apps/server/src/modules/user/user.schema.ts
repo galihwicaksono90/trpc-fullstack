@@ -1,49 +1,46 @@
+import mongoose from "mongoose"
+import { SafeIRole, roleSchema } from "../role/role.schema"
 import { z } from "zod"
-import { IRole, RoleName, RoleSchema, } from "../role/role.schema"
-import { model, Schema } from "mongoose"
+import { ObjectId } from "mongodb"
 
-export type User = {
-  name: string,
+export type IUser = {
+  name: string
   email: string
   password: string
-  role: IRole
+  role: SafeIRole
 }
 
-export const UserSchema = new Schema<User>({
+export type SafeIUser = IUser & {
+  _id: ObjectId
+}
+
+export const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
     type: String,
-    unique: true,
-    required: true
+    required: true,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   role: {
-    type: RoleSchema,
-    required: true
+    type: roleSchema,
+    required: true,
   }
-},
-  {
-    toJSON: {
-      transform: (doc, ret) => {
-        delete ret.password
-        return ret
-      }
-    }
-  }
-)
-
-export const UserModel = model<User>("User", UserSchema)
-
-export const createUserSchema = z.object({
-  name: z.string(),
-  email: z.string().email(),
-  password: z.string().min(8)
+}, {
+  versionKey: false
 })
 
-export type CreateUserInput = z.infer<typeof createUserSchema>
+export const userModel = mongoose.model<IUser>("User", userSchema)
+
+export const createUserInputSchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  password: z.string().min(8),
+})
+
+export type CreateUserInput = z.infer<typeof createUserInputSchema>
